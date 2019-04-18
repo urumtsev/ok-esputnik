@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-pkj_name = 'ok-esputnik'
+pkj_name = 'esputnik'
 
 with open('requirements.txt') as f:
     requires = f.read().splitlines()

@@ -62,6 +62,6 @@ build/
 
 dist/
 
-django_ok_payparts\.egg-info/
-
 \.tox/
+
+ok_esputnik\.egg-info/

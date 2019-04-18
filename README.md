@@ -1,4 +1,4 @@
-# django-ok-payparts
+# ok-escputnik
 
 Simple E-Sputnik REST client library for Python.
 
