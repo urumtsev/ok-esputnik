@@ -1,0 +1,18 @@
+dist: xenial
+sudo: false
+language: python
+cache: pip
+
+python:
+  - 3.6
+  - 3.7
+
+matrix:
+  fast_finish: true
+
+
+install: 
+  - pip install tox-travis tox
+
+script:
+  - tox

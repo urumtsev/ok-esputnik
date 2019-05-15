@@ -23,7 +23,7 @@ __all__ = (
 )
 
 
-def _prepare_emails(value):
+def _prepare_emails(value) -> List:
     if not value:
         raise IncorrectDataError(
             code='emails',
@@ -56,7 +56,7 @@ class ESputnikAPIAdaptor:
             version: int = 1,
             *args,
             **kwargs
-    ):
+    ) -> None:
         """
         Initializes new api adaptor instance to use in classes that
         work with API.

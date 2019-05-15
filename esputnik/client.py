@@ -35,7 +35,7 @@ class ESputnikAPIClient:
             version: int = 1,
             *args,
             **kwargs
-    ):
+    ) -> None:
         self.api_user = api_user
         self.api_password = api_password
         if not self.api_user:
@@ -93,7 +93,8 @@ class ESputnikAPIClient:
     def get_auth_data(self) -> Tuple:
         return self.api_user, self.api_password
 
-    def get_base_headers(self):
+    @staticmethod
+    def get_base_headers() -> Dict:
         return {
             "Content-Type": "application/json",
             "Accept": "application/json"
@@ -106,7 +107,7 @@ class ESputnikAPIClient:
         data: Dict = None,
         headers: Dict = None,
         auth: Tuple = None
-    ):
+    ) -> Response:
         """
         Private method used to send request to the remote REST API server.
 

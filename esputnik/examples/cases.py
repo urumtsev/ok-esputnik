@@ -14,7 +14,7 @@ e_sputnik = ESputnikAPIAdaptor(
 
 
 def test_version():
-    r = e_sputnik.version()
+    return e_sputnik.version()
 
 
 def test_send_message():
@@ -37,7 +37,7 @@ def test_send_message():
         'params': data,
         'recipients': ['john@dou.com', ],
     }
-    r = e_sputnik.message_send(message_id=message_id, data=data)
+    return e_sputnik.message_send(message_id=message_id, data=data)
 
 
 def test_smart_send():
@@ -58,14 +58,14 @@ def test_smart_send():
     for user in users:
         recipients.append({'locator': user['email'], 'json_param': json.dumps(user)})
     data = {'recipients': recipients}
-    r = e_sputnik.message_smartsend(
+    return e_sputnik.message_smartsend(
         message_id=message_id,
         data=data
     )
 
 
 def test_get_contacts():
-    r = e_sputnik.get_contacts()
+    return e_sputnik.get_contacts()
 
 
 def test_add_contact():
@@ -90,7 +90,7 @@ def test_add_contact():
             'postcode': '123456',
         }
     }
-    r = e_sputnik.add_contact(data)
+    return e_sputnik.add_contact(data)
 
 
 def test_update_contact():
@@ -111,17 +111,17 @@ def test_update_contact():
             'postcode': '123456',
         }
     }
-    r = e_sputnik.update_contact(contact_id, data)
+    return e_sputnik.update_contact(contact_id, data)
 
 
 def test_delete_contact():
     contact_id = '100500'
-    r = e_sputnik.delete_contact(contact_id)
+    return e_sputnik.delete_contact(contact_id)
 
 
 def test_get_contact():
     contact_id = '100500'
-    r = e_sputnik.get_contact(contact_id)
+    return e_sputnik.get_contact(contact_id)
 
 
 def test_contact_subscribe():
@@ -149,19 +149,19 @@ def test_contact_subscribe():
         },
         'groups': ['Subscribers', ]
     }
-    r = e_sputnik.contact_subscribe(data)
+    return e_sputnik.contact_subscribe(data)
 
 
 def test_unsubscribe_add():
     email = 'john@dou.com'
-    r = e_sputnik.emails_unsubscribed_add(email)
+    return e_sputnik.emails_unsubscribed_add(email)
 
 
 def test_unsubscribe_delete():
     email = 'john@dou.com'
-    r = e_sputnik.emails_unsubscribed_delete(email)
+    return e_sputnik.emails_unsubscribed_delete(email)
 
 
 def test_message_status():
     message_id = '100500'
-    r = e_sputnik.message_status([message_id, ])
+    return e_sputnik.message_status([message_id, ])
