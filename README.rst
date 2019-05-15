@@ -29,7 +29,7 @@ See a list of examples `here`_.
 .. |Build Status| image:: https://travis-ci.org/LowerDeez/ok-esputnik.svg?branch=master
    :target: https://travis-ci.org/LowerDeez/ok-esputnik
    :alt: Build status
-.. |Code Health| image:: https://api.codacy.com/project/badge/Grade/aa7e0f444c8d4520b0f0db5abc3a5960    
+.. |Code Health| image:: https://api.codacy.com/project/badge/Grade/147156648567470b9c948d2ef0ecf76f    
    :target: https://www.codacy.com/app/LowerDeez/ok-esputnik
    :alt: Code health
 .. |Python Versions| image:: https://img.shields.io/pypi/pyversions/django-ok-esputnik.svg
