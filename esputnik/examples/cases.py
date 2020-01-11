@@ -1,4 +1,6 @@
 """
+A few examples of use
+
 Documentation:
     https://esputnik.com/api/methods.html
 """
@@ -8,9 +10,9 @@ import json
 from esputnik.esputnik import ESputnikAPIAdaptor
 
 e_sputnik = ESputnikAPIAdaptor(
-        user='name@gmail.com',
-        password='secret'
-    )
+    user='name@gmail.com',
+    password='secret'
+)
 
 
 def test_version():

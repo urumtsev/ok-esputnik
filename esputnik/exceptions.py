@@ -1,15 +1,15 @@
 __all__ = (
-    'Error',
+    'ESputnikException',
     'InvalidAuthDataError',
     'IncorrectDataError'
 )
 
 
-class Error(AttributeError):
+class ESputnikException(AttributeError):
     pass
 
 
-class InvalidAuthDataError(Error):
+class InvalidAuthDataError(ESputnikException):
     def __init__(self, code, message):
         self.code = code
         self.message = message

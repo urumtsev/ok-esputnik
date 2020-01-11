@@ -7,7 +7,7 @@ from esputnik.exceptions import InvalidAuthDataError
 
 __all__ = (
     'Response',
-    'ESputnikAPIClient'
+    'ESputnikRequestClient'
 )
 
 
@@ -17,9 +17,9 @@ Response = NamedTuple('Response', [
 ])
 
 
-class ESputnikAPIClient:
+class ESputnikRequestClient:
     """
-    API client class that implements basic REST methods to talk with the
+    Client class that implements basic REST methods to make requests to the
     server.
 
     Attributes:
@@ -38,6 +38,7 @@ class ESputnikAPIClient:
     ) -> None:
         self.api_user = api_user
         self.api_password = api_password
+
         if not self.api_user:
             raise InvalidAuthDataError(
                 code='api_user',
@@ -57,19 +58,11 @@ class ESputnikAPIClient:
 
     def __getattribute__(self, name: str):
         """
-        Override default __getattribute__ to shorter request sending
-        on remote server.
-        For example instead of:
-            >>>> object._send('get', 'url/path', data, headers)
-        You can use:
-            >>>> object.get('url/path', data, headers)
-
-        Args:
-            name (str): Property to get.
+        Shortcut to send request on remote server.
         """
         if name in ['get', 'post', 'put', 'delete']:
             return partial(self._send, name)
-        return super().__getattribute__(name)
+        return object.__getattribute__(self, name)
 
     def construct_url(self, *args) -> str:
         """
@@ -147,7 +140,13 @@ class ESputnikAPIClient:
             response = request_method(
                 url, data, headers=headers, auth=auth)
 
-        return Response(
-            status_code=response.status_code,
-            data=response.json()
-        )
+        try:
+            return Response(
+                status_code=response.status_code,
+                data=response.json()
+            )
+        except Exception:
+            return Response(
+                status_code=response.status_code,
+                data=response.content
+            )

@@ -1,6 +1,10 @@
+"""
+Set of templates to transform data into format, acceptable by ESputnik API
+"""
+
 from functools import partial
 
-from trafaret import Dict, String, List, Key, Enum, URL, Bool, Int, Any
+from trafaret import Dict, String, List, Key, Enum, URL, Bool, Int, Any, Float
 
 from esputnik.consts import (
     MEDIA_CHANNEL_TYPES,
@@ -9,17 +13,18 @@ from esputnik.consts import (
 )
 
 __all__ = (
-    'CONTACT_IN',
-    'CONTACTS_IN',
-    'CONTACT_SUBSCRIBE_IN',
-    'CONTACT_SEARCH_IN',
-    'CONTACT_UPLOAD_IN',
-    'EMAIL_IN',
-    'EMAIL_SEND_IN',
-    'EMAIL_SMARTSEND_IN',
-    'EVENT_IN',
-    'SMS_IN',
-    'VIBER_IN',
+    'CONTACT',
+    'CONTACTS',
+    'CONTACT_SUBSCRIBE',
+    'CONTACT_SEARCH',
+    'CONTACT_UPLOAD',
+    'EMAIL',
+    'EMAIL_SEND',
+    'EMAIL_SMARTSEND',
+    'EVENT',
+    'ORDER',
+    'SMS',
+    'VIBER',
     'prepare_contact',
     'prepare_contacts',
     'prepare_contact_subscribe',
@@ -27,6 +32,7 @@ __all__ = (
     'prepare_contact_upload',
     'prepare_email',
     'prepare_event',
+    'prepare_order',
     'prepare_send_email',
     'prepare_smartsend_email',
     'prepare_sms',
@@ -66,7 +72,7 @@ GROUPS = List(
 )
 
 
-CONTACT_IN = Dict({
+CONTACT = Dict({
     Key('first_name', optional=True) >> 'firstName': String,
     Key('last_name', optional=True) >> 'lastName': String,
     Key('channels') >> 'channels': CHANNELS,
@@ -76,7 +82,7 @@ CONTACT_IN = Dict({
 }, ignore_extra='*')
 
 
-CONTACTS_IN = Dict({
+CONTACTS = Dict({
     Key('contacts') >> 'contacts': List(  # List of contacts (max 3000), which will be added/updated.
         Dict({
             Key('first_name', optional=True) >> 'firstName': String,
@@ -105,7 +111,7 @@ CONTACTS_IN = Dict({
 }, ignore_extra='*')
 
 
-CONTACT_SUBSCRIBE_IN = Dict({
+CONTACT_SUBSCRIBE = Dict({
     Key('contact') >> 'contact': Dict({
         Key('first_name', optional=True) >> 'firstName': String,
         Key('last_name', optional=True) >> 'lastName': String,
@@ -122,7 +128,7 @@ CONTACT_SUBSCRIBE_IN = Dict({
 }, ignore_extra='*')
 
 
-CONTACT_SEARCH_IN = Dict({
+CONTACT_SEARCH = Dict({
     Key('email', optional=True) >> 'email': String,
     Key('sms', optional=True) >> 'sms': String,
     Key('first_name', optional=True) >> 'firstname': String,
@@ -132,7 +138,7 @@ CONTACT_SEARCH_IN = Dict({
 }, ignore_extra='*')
 
 
-CONTACT_UPLOAD_IN = Dict({
+CONTACT_UPLOAD = Dict({
     Key('dedupe_on') >> 'dedupeOn': Enum(*UNIQUENESS_CONTACT_CHOICES),
     Key('link') >> 'link': URL,
     Key('group_names') >> 'groupNames': List(String, min_length=1),
@@ -142,7 +148,7 @@ CONTACT_UPLOAD_IN = Dict({
 }, ignore_extra='*')
 
 
-EMAIL_IN = Dict({
+EMAIL = Dict({
     Key('from') >> 'from': String,
     Key('subject') >> 'subject': String,
     Key('html_text') >> 'htmlText': String,
@@ -150,7 +156,7 @@ EMAIL_IN = Dict({
     Key('emails') >> 'emails': List(String, min_length=1),
 }, ignore_extra='*')
 
-EMAIL_SEND_IN = Dict({
+EMAIL_SEND = Dict({
     Key('params') >> 'params': List(
         Dict({
             Key('key') >> 'key': String,
@@ -163,7 +169,7 @@ EMAIL_SEND_IN = Dict({
 }, ignore_extra='*')
 
 
-EMAIL_SMARTSEND_IN = Dict({
+EMAIL_SMARTSEND = Dict({
     Key('recipients') >> 'recipients': List(
         Dict({
             Key('locator') >> 'locator': String,
@@ -174,7 +180,7 @@ EMAIL_SMARTSEND_IN = Dict({
 }, ignore_extra='*')
 
 
-EVENT_IN = Dict({
+EVENT = Dict({
     Key('event_type_key') >> 'eventTypeKey': String,
     Key('key_value') >> 'keyValue': String,
     Key('params') >> 'params': List(
@@ -187,7 +193,49 @@ EVENT_IN = Dict({
 }, ignore_extra='*')
 
 
-SMS_IN = Dict({
+ORDER = Dict({
+    Key('orders') >> 'orders': List(
+        Dict({
+            Key('id') >> 'externalOrderId': String,
+            Key('user_id') >> 'externalCustomerId': String,
+            Key('total_cost') >> 'totalCost': Float,  # decimal in docs
+            Key('status', default='INITIALIZED') >> 'status': String,
+            Key('date') >> 'date': Any,
+            Key('email') >> 'email': String,
+            Key('phone', optional=True) >> 'phone': String(allow_blank=True),
+            Key('first_name', optional=True) >> 'firstName': String(allow_blank=True),
+            Key('last_name', optional=True) >> 'lastName': String(allow_blank=True),
+            Key('currency', optional=True, default='UAH') >> 'currency': String,
+            Key('shipping', optional=True) >> 'shipping': Float,  # decimal in docs
+            Key('discount', optional=True) >> 'discount': Float,  # decimal in docs
+            Key('taxes', optional=True) >> 'taxes': Float,  # decimal in docs
+            Key('order_url', optional=True) >> 'restoreUrl': String(allow_blank=True),
+            Key('status_description', optional=True) >> 'statusDescription': String(allow_blank=True),
+            Key('store_id', optional=True) >> 'storeId': String(allow_blank=True),
+            Key('delivery_method', optional=True) >> 'deliveryMethod': String(allow_blank=True),
+            Key('payment_method', optional=True) >> 'paymentMethod': String(allow_blank=True),
+            Key('delivery_address', optional=True) >> 'deliveryAddress': String(allow_blank=True),
+            Key('source', optional=True) >> 'source': String(allow_blank=True),
+            Key('items') >> 'items': List(
+                Dict({
+                    Key('id') >> 'externalItemId': String,
+                    Key('name') >> 'name': String,
+                    Key('quantity') >> 'quantity': Int,
+                    Key('cost') >> 'cost': Float,  # decimal in docs
+                    Key('url') >> 'url': String,
+                    Key('image_url') >> 'imageUrl': String,
+                    Key('category') >> 'category': String,
+                    Key('description', optional=True) >> 'description': String,
+                }, ignore_extra='*'),
+                min_length=1
+            )
+        }, ignore_extra='*'),
+        min_length=1
+    )
+}, ignore_extra='*')
+
+
+SMS = Dict({
     Key('from') >> 'from': String,
     Key('text') >> 'text': String,
     Key('phone_numbers') >> 'phoneNumbers': List(String, min_length=1),
@@ -196,7 +244,7 @@ SMS_IN = Dict({
 }, ignore_extra='*')
 
 
-VIBER_IN = Dict({
+VIBER = Dict({
     Key('text') >> 'text': String,
     Key('ttl_seconds', optional=True) >> 'ttlSeconds': Int,  # Message lifetime in seconds, the default is day.
     Key('img', optional=True) >> 'img': URL,  # Link to the picture.
@@ -215,14 +263,15 @@ def _extract(template, *args, **kwargs):
     return template.transform(*args, **kwargs)
 
 
-prepare_contact = partial(_extract, CONTACT_IN)
-prepare_contacts = partial(_extract, CONTACTS_IN)
-prepare_contact_subscribe = partial(_extract, CONTACT_SUBSCRIBE_IN)
-prepare_contact_search = partial(_extract, CONTACT_SEARCH_IN)
-prepare_contact_upload = partial(_extract, CONTACT_UPLOAD_IN)
-prepare_email = partial(_extract, EMAIL_IN)
-prepare_event = partial(_extract, EVENT_IN)
-prepare_send_email = partial(_extract, EMAIL_SEND_IN)
-prepare_smartsend_email = partial(_extract, EMAIL_SMARTSEND_IN)
-prepare_sms = partial(_extract, SMS_IN)
-prepare_viber_message = partial(_extract, VIBER_IN)
+prepare_contact = partial(_extract, CONTACT)
+prepare_contacts = partial(_extract, CONTACTS)
+prepare_contact_subscribe = partial(_extract, CONTACT_SUBSCRIBE)
+prepare_contact_search = partial(_extract, CONTACT_SEARCH)
+prepare_contact_upload = partial(_extract, CONTACT_UPLOAD)
+prepare_email = partial(_extract, EMAIL)
+prepare_event = partial(_extract, EVENT)
+prepare_order = partial(_extract, ORDER)
+prepare_send_email = partial(_extract, EMAIL_SEND)
+prepare_smartsend_email = partial(_extract, EMAIL_SMARTSEND)
+prepare_sms = partial(_extract, SMS)
+prepare_viber_message = partial(_extract, VIBER)

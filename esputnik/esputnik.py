@@ -2,7 +2,7 @@ import json
 from typing import Dict, List, Union
 from six import string_types
 
-from esputnik.client import ESputnikAPIClient
+from esputnik.client import ESputnikRequestClient
 from esputnik.exceptions import IncorrectDataError
 from esputnik.templates import (
     prepare_contact,
@@ -11,6 +11,7 @@ from esputnik.templates import (
     prepare_contact_search,
     prepare_contact_upload,
     prepare_event,
+    prepare_order,
     prepare_send_email,
     prepare_smartsend_email,
     prepare_email,
@@ -42,11 +43,11 @@ class ESputnikAPIAdaptor:
     the API.
 
     Attributes:
-        api_client (APIClient): APIClient instance to work with the API.
-        api_client_class (APIClient): APIClient default class to use
+        request_client_class: APIClient instance to work with the API.
+        client: APIClient default class to use
             when no api_client passed on initialization stage.
     """
-    api_client_class = ESputnikAPIClient
+    request_client_class = ESputnikRequestClient
 
     def __init__(
             self,
@@ -65,7 +66,7 @@ class ESputnikAPIAdaptor:
             api_client (None, optional): Custom APIClient instance, if
                 you need to pass special params or even your own class.
         """
-        self.api_client = self.__class__.api_client_class(
+        self.client = self.__class__.request_client_class(
             api_user=user,
             api_password=password,
             host=host,
@@ -78,7 +79,7 @@ class ESputnikAPIAdaptor:
         """
         Get protocol version.
         """
-        return self.api_client.get(
+        return self.client.get(
             'version'
         )
 
@@ -86,7 +87,7 @@ class ESputnikAPIAdaptor:
         """
         Get current account info.
         """
-        return self.api_client.get(
+        return self.client.get(
             'account/info'
         )
 
@@ -96,7 +97,7 @@ class ESputnikAPIAdaptor:
         The catalog contains the list of additional fields
         for contacts that are available in your organisation.
         """
-        return self.api_client.get(
+        return self.client.get(
             'addressbooks'
         )
 
@@ -104,7 +105,7 @@ class ESputnikAPIAdaptor:
         """
         Get organisation balance.
         """
-        return self.api_client.get(
+        return self.client.get(
             'balance'
         )
 
@@ -116,7 +117,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_contact(data))
-        return self.api_client.post(
+        return self.client.post(
             'contact',
             data
         )
@@ -132,7 +133,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_contact(data))
-        return self.api_client.put(
+        return self.client.put(
             f'contact/{contact_id}',
             data
         )
@@ -146,7 +147,7 @@ class ESputnikAPIAdaptor:
         Args:
             contact_id (str): id of contact in your esputnik database
         """
-        return self.api_client.delete(
+        return self.client.delete(
             f'contact/{contact_id}'
         )
 
@@ -159,7 +160,7 @@ class ESputnikAPIAdaptor:
         Args:
             contact_id (str): id of contact in your esputnik database
         """
-        return self.api_client.get(
+        return self.client.get(
             f'contact/{contact_id}'
         )
 
@@ -176,7 +177,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_contact_subscribe(data))
-        return self.api_client.post(
+        return self.client.post(
             'contact/subscribe',
             data
         )
@@ -192,7 +193,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_contacts(data))
-        return self.api_client.post(
+        return self.client.post(
             'contacts',
             data
         )
@@ -207,7 +208,7 @@ class ESputnikAPIAdaptor:
         """
         if data:
             data = prepare_contact_search(data)
-        return self.api_client.get(
+        return self.client.get(
             'contacts',
             data
         )
@@ -223,7 +224,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_contact_upload(data))
-        return self.api_client.post(
+        return self.client.post(
             'contacts/upload',
             data
         )
@@ -240,7 +241,7 @@ class ESputnikAPIAdaptor:
         data = json.dumps({
             "emails": _prepare_emails(emails)
         })
-        return self.api_client.post(
+        return self.client.post(
             'emails/unsubscribed/add',
             data
         )
@@ -257,7 +258,7 @@ class ESputnikAPIAdaptor:
         data = json.dumps({
             "emails": _prepare_emails(emails)
         })
-        return self.api_client.post(
+        return self.client.post(
             'emails/unsubscribed/delete',
             data
         )
@@ -272,8 +273,23 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_event(data))
-        return self.api_client.post(
+        return self.client.post(
             'event',
+            data
+        )
+
+    def orders(self, data: Dict):
+        """
+        Add orders.
+
+                Type of method: POST.
+
+        Args:
+            data (Dict): dict of data to send
+        """
+        data = json.dumps(prepare_order(data))
+        return self.client.post(
+            'orders',
             data
         )
 
@@ -286,7 +302,7 @@ class ESputnikAPIAdaptor:
         Args:
             group_id: id of group in your esputnik database
         """
-        return self.api_client.get(
+        return self.client.get(
             f'group/{group_id}/contacts'
         )
 
@@ -299,7 +315,7 @@ class ESputnikAPIAdaptor:
         Args:
             group_id: id of group in your esputnik database
         """
-        return self.api_client.post(
+        return self.client.post(
             f'group/{group_id}/contacts/detach'
         )
 
@@ -309,7 +325,7 @@ class ESputnikAPIAdaptor:
 
         Type of method: GET.
         """
-        return self.api_client.get(
+        return self.client.get(
             'groups'
         )
 
@@ -329,7 +345,7 @@ class ESputnikAPIAdaptor:
                 message='You mast provide \'recipients\' or \'group_id\'.'
             )
         data = json.dumps(prepare_send_email(data))
-        return self.api_client.post(
+        return self.client.post(
             f'message/{message_id}/send',
             data
         )
@@ -344,7 +360,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_smartsend_email(data))
-        return self.api_client.post(
+        return self.client.post(
             f'message/{message_id}/smartsend',
             data
         )
@@ -357,7 +373,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_email(data))
-        return self.api_client.post(
+        return self.client.post(
             'message/email',
             data
         )
@@ -369,7 +385,7 @@ class ESputnikAPIAdaptor:
         Type of method: POST.
         """
         data = json.dumps(prepare_sms(data))
-        return self.api_client.post(
+        return self.client.post(
             'message/sms',
             data
         )
@@ -386,7 +402,7 @@ class ESputnikAPIAdaptor:
         data = {
             'ids': ids or []
         }
-        return self.api_client.get(
+        return self.client.get(
             'message/status',
             data
         )
@@ -402,7 +418,7 @@ class ESputnikAPIAdaptor:
             data (Dict): dict of data to send
         """
         data = json.dumps(prepare_viber_message(data))
-        return self.api_client.post(
+        return self.client.post(
             'message/viber',
             data
         )
