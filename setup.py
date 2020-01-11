@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='ok-esputnik',
-    version='0.2',
+    version='0.3',
     description='Simple E-Sputnik REST client library for Python.',
     long_description=open('README.rst').read(),
     author='Oleg Kleschunov',
