@@ -39,9 +39,6 @@ def _prepare_emails(value) -> List:
 
 class ESputnikAPIAdaptor:
     """
-    Base class that should be inherited by each class that has to work
-    the API.
-
     Attributes:
         request_client_class: APIClient instance to work with the API.
         client: APIClient default class to use
