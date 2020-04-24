@@ -419,3 +419,16 @@ class ESputnikAPIAdaptor:
             'message/viber',
             data
         )
+
+  def get_broadcasts(self, data: Dict = None):
+        """
+        Search broadcasts.
+        The method returns max 500 results.
+        There are total amount of contacts in TotalCount header.
+
+        Type of method: GET.
+        """
+        return self.client.get(
+            'broadcasts',
+            data
+        )
